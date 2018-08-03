@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`Adafruit_TMP007`
+`adafruit_tmp007`
 ====================================================
 
 CircuitPython driver for the TMP007 contactless IR thermometer
@@ -51,25 +51,25 @@ __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_TMP007.git"
 
 
 # Default device I2C address.
-TMP007_I2CADDR = const(0x40)
+_TMP007_I2CADDR = const(0x40)
 
 # Register addresses.
-TMP007_CONFIG = const(0x02)
-TMP007_DEVID = const(0x1F)
-TMP007_VOBJ = const(0x0)
-TMP007_TAMB = const(0x01)
-TMP007_TOBJ = const(0x03)
+_TMP007_CONFIG = const(0x02)
+_TMP007_DEVID = const(0x1F)
+_TMP007_VOBJ = const(0x0)
+_TMP007_TAMB = const(0x01)
+_TMP007_TOBJ = const(0x03)
 
 # Config register values.
-TMP007_CFG_RESET = const(0x8000)
-TMP007_CFG_MODEON = const(0x7000)
+_TMP007_CFG_RESET = const(0x8000)
+_TMP007_CFG_MODEON = const(0x7000)
 CFG_1SAMPLE = const(0x0000)
 CFG_2SAMPLE = const(0x0200)
 CFG_4SAMPLE = const(0x0400)
 CFG_8SAMPLE = const(0x0600)
 CFG_16SAMPLE = const(0x0800)
-TMP007_CFG_DRDYEN = const(0x0100)
-TMP007_CFG_DRDY = const(0x0080)
+_TMP007_CFG_DRDYEN = const(0x0100)
+_TMP007_CFG_DRDY = const(0x0080)
 
 
 class TMP007:
@@ -84,7 +84,7 @@ class TMP007:
 
 
 
-    def __init__(self, i2c, address=TMP007_I2CADDR):
+    def __init__(self, i2c, address=_TMP007_I2CADDR):
         """Initialize TMP007 device on the specified I2C address and bus number.
         Address defaults to 0x40 and bus number defaults to the appropriate bus
         for the hardware.
@@ -98,7 +98,7 @@ class TMP007:
         for the highest resolution.  Returns True if the device is intialized,
         False otherwise.
         """
-        self._write_u16(TMP007_CONFIG, TMP007_CFG_RESET)
+        self._write_u16(_TMP007_CONFIG, _TMP007_CFG_RESET)
         time.sleep(.5)
         if samplerate not in (CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE,
                               CFG_16SAMPLE):
@@ -106,10 +106,10 @@ class TMP007:
                 'CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE, or CFG_16SAMPLE')
         # Set configuration register to turn on chip, enable data ready output,
         # and start sampling at the specified rate.
-        config = TMP007_CFG_MODEON | TMP007_CFG_DRDYEN | samplerate
-        self._write_u16(TMP007_CONFIG, config)
+        config = _TMP007_CFG_MODEON | _TMP007_CFG_DRDYEN | samplerate
+        self._write_u16(_TMP007_CONFIG, config)
         # Check device ID match expected value.
-        return  self.read_register(TMP007_DEVID) == 0x0078
+        return  self.read_register(_TMP007_DEVID) == 0x0078
 
 
 
@@ -117,21 +117,21 @@ class TMP007:
         """Put TMP007 into low power sleep mode.  No measurement data will be
         updated while in sleep mode.
         """
-        control = self._read_u16(TMP007_CONFIG)
-        control &= ~(TMP007_CFG_MODEON)
-        self._write_u16(TMP007_CONFIG, control)
+        control = self._read_u16(_TMP007_CONFIG)
+        control &= ~(_TMP007_CFG_MODEON)
+        self._write_u16(_TMP007_CONFIG, control)
 
     def wake(self):
         """Wake up TMP007 from low power sleep mode."""
-        control = self._read_u16(TMP007_CONFIG)
-        control |= TMP007_CFG_MODEON
-        self._write_u16(TMP007_CONFIG, control)
+        control = self._read_u16(_TMP007_CONFIG)
+        control |= _TMP007_CFG_MODEON
+        self._write_u16(_TMP007_CONFIG, control)
 
     def read_raw_voltage(self):
         """Read raw voltage from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
-        raw = self._read_u16(TMP007_VOBJ)
+        raw = self._read_u16(_TMP007_VOBJ)
         if raw > 32767:
             raw = (raw & 0x7fff) - 32768
         return raw
@@ -140,7 +140,7 @@ class TMP007:
         """Read raw die temperature from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
-        raw = self._read_u16(TMP007_TAMB)
+        raw = self._read_u16(_TMP007_TAMB)
         return raw >> 2
 
     def read_die_temp_c(self):
@@ -151,7 +151,7 @@ class TMP007:
     def read_obj_temp_c(self):
         """Read object temperature from TMP007 sensor.
         """
-        raw = self._read_u16(TMP007_TOBJ)
+        raw = self._read_u16(_TMP007_TOBJ)
         if raw & 1:
             return -9999.
         raw = raw >> 2
