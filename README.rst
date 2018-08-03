@@ -13,7 +13,7 @@ Introduction
     :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_TMP007
     :alt: Build Status
 
-.. todo:: Describe what the library does.
+CircuitPython driver for the TMP007 contactless IR thermometer
 
 Dependencies
 =============
@@ -29,7 +29,6 @@ This is easily achieved by downloading
 Usage Example
 =============
 
-.. todo:: Add a quick, simple example. It and other examples should live in the examples folder and be included in docs/examples.rst.
 
 Contributing
 ============
