@@ -84,20 +84,17 @@ class TMP007:
 
 
 
-    def __init__(self, i2c, address=_TMP007_I2CADDR):
+    def __init__(self, i2c, address=_TMP007_I2CADDR, samplerate=CFG_16SAMPLE):
         """Initialize TMP007 device on the specified I2C address and bus number.
         Address defaults to 0x40 and bus number defaults to the appropriate bus
         for the hardware.
-        """
-        self._device = I2CDevice(i2c, address)
-
-    def begin(self, samplerate=CFG_16SAMPLE):
-        """Start taking temperature measurements.  Samplerate can be one of
+        Start taking temperature measurements.  Samplerate can be one of
         TMP007_CFG_1SAMPLE, TMP007_CFG_2SAMPLE, TMP007_CFG_4SAMPLE,
         TMP007_CFG_8SAMPLE, or TMP007_CFG_16SAMPLE.  The default is 16 samples
         for the highest resolution.  Returns True if the device is intialized,
         False otherwise.
         """
+        self._device = I2CDevice(i2c, address)
         self._write_u16(_TMP007_CONFIG, _TMP007_CFG_RESET)
         time.sleep(.5)
         if samplerate not in (CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE,
@@ -109,10 +106,11 @@ class TMP007:
         config = _TMP007_CFG_MODEON | _TMP007_CFG_DRDYEN | samplerate
         self._write_u16(_TMP007_CONFIG, config)
         # Check device ID match expected value.
-        return  self.read_register(_TMP007_DEVID) == 0x0078
+        dev_id = self.read_register(_TMP007_DEVID)
+        if dev_id != 0x78:
+            raise ValueError('Init failed - Did not find TMP007')
 
-
-
+    @property
     def sleep(self):
         """Put TMP007 into low power sleep mode.  No measurement data will be
         updated while in sleep mode.
@@ -121,13 +119,15 @@ class TMP007:
         control &= ~(_TMP007_CFG_MODEON)
         self._write_u16(_TMP007_CONFIG, control)
 
+    @property
     def wake(self):
         """Wake up TMP007 from low power sleep mode."""
         control = self._read_u16(_TMP007_CONFIG)
         control |= _TMP007_CFG_MODEON
         self._write_u16(_TMP007_CONFIG, control)
 
-    def read_raw_voltage(self):
+    @property
+    def raw_voltage(self):
         """Read raw voltage from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
@@ -136,19 +136,22 @@ class TMP007:
             raw = (raw & 0x7fff) - 32768
         return raw
 
-    def read_raw_die_temperature(self):
+    @property
+    def raw_sensor_temperature(self):
         """Read raw die temperature from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
         raw = self._read_u16(_TMP007_TAMB)
         return raw >> 2
 
-    def read_die_temp_c(self):
+    @property
+    def die_temperature(self):
         """Read sensor die temperature and return its value in degrees celsius."""
-        t_die = self.read_raw_die_temperature()
+        t_die = self.raw_sensor_temperature
         return t_die * 0.03125
 
-    def read_obj_temp_c(self):
+    @property
+    def temperature(self):
         """Read object temperature from TMP007 sensor.
         """
         raw = self._read_u16(_TMP007_TOBJ)

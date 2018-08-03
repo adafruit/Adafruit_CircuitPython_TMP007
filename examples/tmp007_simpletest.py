@@ -24,12 +24,9 @@ sensor = adafruit_tmp007.TMP007(i2c)
 # Initialize communication with the sensor, using the default 16 samples per conversion.
 # This is the best accuracy but a little slower at reacting to changes.
 # The first sample will be meaningless
-if sensor.begin():
-    while True:
-        die_temp = sensor.read_die_temp_c()
-        print('   Die temperature: {0:0.3F}*C / {1:0.3F}*F'.format(die_temp, c_to_f(die_temp)))
-        obj_temp = sensor.read_obj_temp_c()
-        print('Object temperature: {0:0.3F}*C / {1:0.3F}*F'.format(obj_temp, c_to_f(obj_temp)))
-        time.sleep(5.0)
-else:
-    print("Sensor Init failed")
+while True:
+    die_temp = sensor.die_temperature
+    print('   Die temperature: {0:0.3F}*C / {1:0.3F}*F'.format(die_temp, c_to_f(die_temp)))
+    obj_temp = sensor.temperature
+    print('Object temperature: {0:0.3F}*C / {1:0.3F}*F'.format(obj_temp, c_to_f(obj_temp)))
+    time.sleep(5.0)
