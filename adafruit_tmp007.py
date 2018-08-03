@@ -23,7 +23,7 @@
 `Adafruit_TMP007`
 ====================================================
 
-.. todo:: Describe what the module does
+CircuitPython driver for the TMP007 contactless IR thermometer
 
 * Author(s): Jerry Needell
 
