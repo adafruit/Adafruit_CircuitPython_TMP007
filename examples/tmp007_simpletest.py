@@ -23,6 +23,7 @@ sensor = adafruit_tmp007.TMP007(i2c)
 
 # Initialize communication with the sensor, using the default 16 samples per conversion.
 # This is the best accuracy but a little slower at reacting to changes.
+# The first sample will be meaningless
 if sensor.begin():
     while True:
         die_temp = sensor.read_die_temp_c()
