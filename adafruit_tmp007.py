@@ -108,9 +108,8 @@ class TMP007:
         # Check device ID match expected value.
         dev_id = self.read_register(_TMP007_DEVID)
         if dev_id != 0x78:
-            raise ValueError('Init failed - Did not find TMP007')
+            raise RuntimeError('Init failed - Did not find TMP007')
 
-    @property
     def sleep(self):
         """Put TMP007 into low power sleep mode.  No measurement data will be
         updated while in sleep mode.
@@ -119,7 +118,6 @@ class TMP007:
         control &= ~(_TMP007_CFG_MODEON)
         self._write_u16(_TMP007_CONFIG, control)
 
-    @property
     def wake(self):
         """Wake up TMP007 from low power sleep mode."""
         control = self._read_u16(_TMP007_CONFIG)
