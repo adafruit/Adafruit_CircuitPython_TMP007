@@ -166,15 +166,15 @@ class TMP007:
     def _read_u8(self, address):
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
-            i2c.write(self._BUFFER, end=1, stop=False)
-            i2c.readinto(self._BUFFER, end=1)
+            i2c.write_then_readinto(self._BUFFER, self._BUFFER,
+                                    out_end=1, in_end=1)
         return self._BUFFER[0]
 
     def _read_u16(self, address):
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
-            i2c.write(self._BUFFER, end=1, stop=False)
-            i2c.readinto(self._BUFFER, end=2)
+            i2c.write_then_readinto(self._BUFFER, self._BUFFER,
+                                    out_end=1, in_end=2)
         return self._BUFFER[0]<<8 | self._BUFFER[1]
 
     def _write_u8(self, address, val):
@@ -194,5 +194,4 @@ class TMP007:
     def _read_bytes(device, address, count, buf):
         with device as i2c:
             buf[0] = address & 0xFF
-            i2c.write(buf, end=1, stop=False)
-            i2c.readinto(buf, end=count)
+            i2c.write_then_readinto(buf, buf, out_end=1, in_end=count)
