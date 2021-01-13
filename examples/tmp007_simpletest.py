@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 #!/usr/bin/python
 # Author: Adapted to CircuitPython by Jerry Needell
 #     Adafruit_Python_TMP example by Tony DiCola
