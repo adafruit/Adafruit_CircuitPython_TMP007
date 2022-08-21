@@ -28,6 +28,11 @@ import time
 from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
 
+try:
+    from typing_extensions import Literal
+    from busio import I2C
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_TMP007.git"
@@ -65,7 +70,18 @@ class TMP007:
     # thread safe!
     _BUFFER = bytearray(4)
 
-    def __init__(self, i2c, address=_TMP007_I2CADDR, samplerate=CFG_16SAMPLE):
+    def __init__(
+        self,
+        i2c: I2C,
+        address: int = _TMP007_I2CADDR,
+        samplerate: Literal[
+            CFG_1SAMPLE,
+            CFG_2SAMPLE,
+            CFG_4SAMPLE,
+            CFG_8SAMPLE,
+            CFG_16SAMPLE,
+        ] = CFG_16SAMPLE,
+    ) -> None:
         """Initialize TMP007 device on the specified I2C address and bus number.
         Address defaults to 0x40 and bus number defaults to the appropriate bus
         for the hardware.
@@ -98,7 +114,7 @@ class TMP007:
         if dev_id != 0x78:
             raise RuntimeError("Init failed - Did not find TMP007")
 
-    def sleep(self):
+    def sleep(self) -> None:
         """Put TMP007 into low power sleep mode.  No measurement data will be
         updated while in sleep mode.
         """
@@ -106,14 +122,14 @@ class TMP007:
         control &= ~(_TMP007_CFG_MODEON)
         self._write_u16(_TMP007_CONFIG, control)
 
-    def wake(self):
+    def wake(self) -> None:
         """Wake up TMP007 from low power sleep mode."""
         control = self._read_u16(_TMP007_CONFIG)
         control |= _TMP007_CFG_MODEON
         self._write_u16(_TMP007_CONFIG, control)
 
     @property
-    def raw_voltage(self):
+    def raw_voltage(self) -> int:
         """Read raw voltage from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
@@ -123,7 +139,7 @@ class TMP007:
         return raw
 
     @property
-    def raw_sensor_temperature(self):
+    def raw_sensor_temperature(self) -> int:
         """Read raw die temperature from TMP007 sensor.  Meant to be used in the
         calculation of temperature values.
         """
@@ -131,13 +147,13 @@ class TMP007:
         return raw >> 2
 
     @property
-    def die_temperature(self):
+    def die_temperature(self) -> float:
         """Read sensor die temperature and return its value in degrees celsius."""
         t_die = self.raw_sensor_temperature
         return t_die * 0.03125
 
     @property
-    def temperature(self):
+    def temperature(self) -> float:
         """Read object temperature from TMP007 sensor."""
         raw = self._read_u16(_TMP007_TOBJ)
         if raw & 1:
@@ -145,29 +161,29 @@ class TMP007:
         raw = raw >> 2
         return raw * 0.03125
 
-    def read_register(self, register):
+    def read_register(self, register) -> int:
         """Read sensor Register."""
         return self._read_u16(register)
 
-    def _read_u8(self, address):
+    def _read_u8(self, address: int) -> int:
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
             i2c.write_then_readinto(self._BUFFER, self._BUFFER, out_end=1, in_end=1)
         return self._BUFFER[0]
 
-    def _read_u16(self, address):
+    def _read_u16(self, address: int) -> int:
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
             i2c.write_then_readinto(self._BUFFER, self._BUFFER, out_end=1, in_end=2)
         return self._BUFFER[0] << 8 | self._BUFFER[1]
 
-    def _write_u8(self, address, val):
+    def _write_u8(self, address: int, val: int) -> None:
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
             self._BUFFER[1] = val & 0xFF
             i2c.write(self._BUFFER, end=2)
 
-    def _write_u16(self, address, val):
+    def _write_u16(self, address: int, val: int) -> None:
         with self._device as i2c:
             self._BUFFER[0] = address & 0xFF
             self._BUFFER[1] = (val >> 8) & 0xFF
@@ -175,7 +191,7 @@ class TMP007:
             i2c.write(self._BUFFER, end=3)
 
     @staticmethod
-    def _read_bytes(device, address, count, buf):
+    def _read_bytes(device, address: int, count: int, buf: bytearray) -> None:
         with device as i2c:
             buf[0] = address & 0xFF
             i2c.write_then_readinto(buf, buf, out_end=1, in_end=count)
