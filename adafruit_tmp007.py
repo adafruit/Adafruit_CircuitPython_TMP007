@@ -88,8 +88,7 @@ class TMP007:
         Start taking temperature measurements.  Samplerate can be one of
         TMP007_CFG_1SAMPLE, TMP007_CFG_2SAMPLE, TMP007_CFG_4SAMPLE,
         TMP007_CFG_8SAMPLE, or TMP007_CFG_16SAMPLE.  The default is 16 samples
-        for the highest resolution.  Returns True if the device is intialized,
-        False otherwise.
+        for the highest resolution.
         """
         self._device = I2CDevice(i2c, address)
         self._write_u16(_TMP007_CONFIG, _TMP007_CFG_RESET)
