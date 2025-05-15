@@ -7,8 +7,10 @@
 #
 
 import time
+
 import board
 import busio
+
 import adafruit_tmp007
 
 
@@ -27,11 +29,7 @@ sensor = adafruit_tmp007.TMP007(i2c)
 # The first sample will be meaningless
 while True:
     die_temp = sensor.die_temperature
-    print(
-        "   Die temperature: {0:0.3F}*C / {1:0.3F}*F".format(die_temp, c_to_f(die_temp))
-    )
+    print(f"   Die temperature: {die_temp:0.3F}*C / {c_to_f(die_temp):0.3F}*F")
     obj_temp = sensor.temperature
-    print(
-        "Object temperature: {0:0.3F}*C / {1:0.3F}*F".format(obj_temp, c_to_f(obj_temp))
-    )
+    print(f"Object temperature: {obj_temp:0.3F}*C / {c_to_f(obj_temp):0.3F}*F")
     time.sleep(5.0)
