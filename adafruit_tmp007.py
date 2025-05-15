@@ -25,12 +25,13 @@ Implementation Notes
 # imports
 
 import time
-from micropython import const
+
 from adafruit_bus_device.i2c_device import I2CDevice
+from micropython import const
 
 try:
-    from typing_extensions import Literal
     from busio import I2C
+    from typing_extensions import Literal
 except ImportError:
     pass
 
@@ -93,13 +94,13 @@ class TMP007:
         self._device = I2CDevice(i2c, address)
         self._write_u16(_TMP007_CONFIG, _TMP007_CFG_RESET)
         time.sleep(0.5)
-        if samplerate not in (
+        if samplerate not in {
             CFG_1SAMPLE,
             CFG_2SAMPLE,
             CFG_4SAMPLE,
             CFG_8SAMPLE,
             CFG_16SAMPLE,
-        ):
+        }:
             raise ValueError(
                 "Unexpected samplerate value! Must be one of: "
                 "CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE, or CFG_16SAMPLE"
