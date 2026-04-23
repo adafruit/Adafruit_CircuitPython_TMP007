@@ -158,7 +158,7 @@ class TMP007:
         raw = self._read_u16(_TMP007_TOBJ)
         if raw & 1:
             return -9999.0
-        raw = raw >> 2
+        raw >>= 2
         return raw * 0.03125
 
     def read_register(self, register) -> int:
